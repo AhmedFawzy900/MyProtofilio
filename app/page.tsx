@@ -1,11 +1,13 @@
 import Link from "next/link";
 import { AskButton } from "@/components/chat/ask-button";
 import { Icon, type IconName } from "@/components/icons";
+import { JsonLd } from "@/components/json-ld";
 import { ProjectsGrid } from "@/components/projects-grid";
 import { Reveal } from "@/components/reveal";
 import { SectionHeading } from "@/components/section-heading";
 import { SpotlightCard } from "@/components/spotlight-card";
 import { experiences, profile, projects, skillGroups, techMarquee } from "@/data/profile";
+import { homeSchema } from "@/lib/structured-data";
 
 const stats = [
   { value: `${profile.yearsOfExperience}`, label: "Years of experience" },
@@ -26,6 +28,7 @@ const sampleQuestions = [
 export default function Home() {
   return (
     <>
+      <JsonLd data={homeSchema()} />
       <Hero />
       <About />
       <Skills />

@@ -6,7 +6,10 @@ import { Icon } from "@/components/icons";
 import { ProjectCard } from "@/components/project-card";
 import { Reveal } from "@/components/reveal";
 import { SpotlightCard } from "@/components/spotlight-card";
-import { experiences, getExperience, projectsForExperience } from "@/data/profile";
+import { JsonLd } from "@/components/json-ld";
+import { experiences, getExperience, profile, projectsForExperience } from "@/data/profile";
+import { site } from "@/lib/site";
+import { experienceSchema } from "@/lib/structured-data";
 
 export const dynamicParams = false;
 
@@ -18,7 +21,17 @@ export async function generateMetadata({ params }: PageProps<"/experience/[slug]
   const { slug } = await params;
   const experience = getExperience(slug);
   if (!experience) return {};
-  return { title: `${experience.role} @ ${experience.company}`, description: experience.summary };
+  const title = `${experience.role} at ${experience.company}`;
+  const description = `${experience.start} – ${experience.end}. ${experience.summary}`;
+  const path = `/experience/${experience.slug}`;
+  return {
+    title,
+    description,
+    keywords: [experience.company, experience.role, ...experience.tech, profile.name],
+    alternates: { canonical: path },
+    openGraph: { type: "article", url: path, siteName: site.name, title, description, locale: site.locale },
+    twitter: { card: "summary_large_image", title, description },
+  };
 }
 
 export default async function ExperiencePage({ params }: PageProps<"/experience/[slug]">) {
@@ -34,6 +47,7 @@ export default async function ExperiencePage({ params }: PageProps<"/experience/
 
   return (
     <article className="px-4 pt-32 pb-24">
+      <JsonLd data={experienceSchema(experience)} />
       <div className="mx-auto max-w-5xl">
         <Reveal>
           <Link href="/#experience" className="group inline-flex items-center gap-2 text-sm text-muted transition hover:text-white">

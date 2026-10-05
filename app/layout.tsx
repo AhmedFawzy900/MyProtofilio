@@ -5,6 +5,7 @@ import { ChatWidget } from "@/components/chat/chat-widget";
 import { Footer } from "@/components/footer";
 import { Navbar } from "@/components/navbar";
 import { profile } from "@/data/profile";
+import { site, siteUrl } from "@/lib/site";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -18,22 +19,50 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: {
-    default: `${profile.name} — ${profile.title}`,
-    template: `%s · ${profile.name}`,
+    default: site.title,
+    template: `%s | ${profile.name}`,
   },
-  description: profile.summary,
-  keywords: ["Ahmed Fawzy Attia", "Laravel Developer", "Backend Developer", "PHP", "Low-Code", "Workflow Automation", "Cairo", "Egypt"],
+  description: site.description,
+  applicationName: site.name,
+  keywords: site.keywords,
   authors: [{ name: profile.name, url: profile.linkedin }],
+  creator: profile.name,
+  publisher: profile.name,
+  category: "technology",
+  alternates: { canonical: "/" },
   openGraph: {
-    title: `${profile.name} — ${profile.title}`,
-    description: profile.headline,
-    type: "website",
+    type: "profile",
+    url: "/",
+    siteName: site.name,
+    title: site.title,
+    description: site.description,
+    locale: site.locale,
+    firstName: profile.firstName,
+    lastName: "Attia",
+    username: "ahmedfawzy900",
   },
+  twitter: {
+    card: "summary_large_image",
+    title: site.title,
+    description: site.description,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 },
+  },
+  verification: {
+    ...(site.googleVerification && { google: site.googleVerification }),
+    ...(site.bingVerification && { other: { "msvalidate.01": site.bingVerification } }),
+  },
+  formatDetection: { telephone: false, email: false, address: false },
 };
 
 export const viewport: Viewport = {
   themeColor: "#05060f",
+  colorScheme: "dark",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

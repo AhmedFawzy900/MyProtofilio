@@ -7,7 +7,10 @@ import { ProjectCard } from "@/components/project-card";
 import { ProjectCover } from "@/components/project-cover";
 import { Reveal } from "@/components/reveal";
 import { SpotlightCard } from "@/components/spotlight-card";
-import { getExperience, getProject, projects } from "@/data/profile";
+import { JsonLd } from "@/components/json-ld";
+import { getExperience, getProject, profile, projects } from "@/data/profile";
+import { site } from "@/lib/site";
+import { projectSchema } from "@/lib/structured-data";
 
 export const dynamicParams = false;
 
@@ -19,7 +22,21 @@ export async function generateMetadata({ params }: PageProps<"/projects/[slug]">
   const { slug } = await params;
   const project = getProject(slug);
   if (!project) return {};
-  return { title: project.name, description: `${project.tagline}. ${project.overview}` };
+  const title = `${project.name} — ${project.tagline}`;
+  const description = truncate(`${project.overview} Built with ${project.tech.join(", ")}.`, 160);
+  const path = `/projects/${project.slug}`;
+  return {
+    title,
+    description,
+    keywords: [project.name, ...project.tech, project.category, profile.name, "portfolio project"],
+    alternates: { canonical: path },
+    openGraph: { type: "article", url: path, siteName: site.name, title, description, locale: site.locale },
+    twitter: { card: "summary_large_image", title, description },
+  };
+}
+
+function truncate(text: string, max: number) {
+  return text.length <= max ? text : `${text.slice(0, max - 1).replace(/\s+\S*$/, "")}…`;
 }
 
 export default async function ProjectPage({ params }: PageProps<"/projects/[slug]">) {
@@ -44,6 +61,7 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
 
   return (
     <article className="px-4 pt-32 pb-24">
+      <JsonLd data={projectSchema(project)} />
       <div className="mx-auto max-w-6xl">
         <Reveal>
           <Link href="/#projects" className="group inline-flex items-center gap-2 text-sm text-muted transition hover:text-white">

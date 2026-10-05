@@ -44,7 +44,8 @@ export type SkillGroup = {
 };
 
 export const profile = {
-  name: "Ahmed Fawzy Attia",
+  name: "Ahmed Attia",
+  fullName: "Ahmed Fawzy Attia",
   firstName: "Ahmed",
   initials: "AF",
   title: "Software Developer",
